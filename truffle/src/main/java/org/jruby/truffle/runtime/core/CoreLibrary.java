@@ -76,6 +76,7 @@ public class CoreLibrary {
     private final RubyClass keyErrorClass;
     private final RubyClass loadErrorClass;
     private final RubyClass localJumpErrorClass;
+    private final RubyClass lookupTableClass;
     private final RubyClass matchDataClass;
     private final RubyClass moduleClass;
     private final RubyClass nameErrorClass;
@@ -106,6 +107,7 @@ public class CoreLibrary {
     private final RubyClass threadClass;
     private final RubyClass timeClass;
     private final RubyClass trueClass;
+    private final RubyClass tupleClass;
     private final RubyClass typeErrorClass;
     private final RubyClass zeroDivisionErrorClass;
     private final RubyModule configModule;
@@ -179,9 +181,6 @@ public class CoreLibrary {
         // Exception
         exceptionClass = defineClass("Exception", new RubyException.ExceptionAllocator());
 
-        // EncodingError
-        encodingErrorClass = defineClass(exceptionClass, "EncodingError");
-
         // FiberError
         fiberErrorClass = defineClass(exceptionClass, "FiberError");
 
@@ -194,6 +193,7 @@ public class CoreLibrary {
         // StandardError
         standardErrorClass = defineClass(exceptionClass, "StandardError");
         argumentErrorClass = defineClass(standardErrorClass, "ArgumentError");
+        encodingErrorClass = defineClass(standardErrorClass, "EncodingError");
         ioErrorClass = defineClass(standardErrorClass, "IOError");
         localJumpErrorClass = defineClass(standardErrorClass, "LocalJumpError");
         regexpErrorClass = defineClass(standardErrorClass, "RegexpError");
@@ -299,7 +299,7 @@ public class CoreLibrary {
 
         // The rest
 
-        encodingCompatibilityErrorClass = defineClass(encodingClass, standardErrorClass, "CompatibilityError");
+        encodingCompatibilityErrorClass = defineClass(encodingClass, encodingErrorClass, "CompatibilityError");
 
         encodingConverterClass = defineClass(encodingClass, objectClass, "Converter", new RubyEncodingConverter.EncodingConverterAllocator());
 
@@ -309,7 +309,9 @@ public class CoreLibrary {
 
         rubiniusModule = defineModule("Rubinius");
         byteArrayClass = defineClass(rubiniusModule, objectClass, "ByteArray");
+        lookupTableClass = defineClass(rubiniusModule, hashClass, "LookupTable");
         stringDataClass = defineClass(rubiniusModule, objectClass, "StringData");
+        tupleClass = defineClass(rubiniusModule, arrayClass, "Tuple");
 
         // Include the core modules
 
@@ -1149,8 +1151,16 @@ public class CoreLibrary {
         return byteArrayClass;
     }
 
+    public RubyClass getLookupTableClass() {
+        return lookupTableClass;
+    }
+
     public RubyClass getStringDataClass() {
         return stringDataClass;
+    }
+
+    public RubyClass getTupleClass() {
+        return tupleClass;
     }
 
     public RubyBasicObject getRubiniusUndefined() {
